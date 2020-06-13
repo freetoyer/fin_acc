@@ -15,7 +15,7 @@ import environ
 
 
 ROOT_DIR = (
-    environ.Path(__file__) - 2
+    environ.Path(__file__) - 3
 )
 
 env = environ.Env()
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
 ]
 
 MIDDLEWARE = [
