@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'core',
+    'cheques',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +129,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
+
+# CustomUser
+AUTH_USER_MODEL = 'users.CustomUser'
