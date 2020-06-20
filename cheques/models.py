@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Shop(models.Model):
-    inn = models.CharField(max_length=15)
+    inn = models.CharField(max_length=15, unique=True)
     address = models.CharField(max_length=100)
     
     def __str__(self):
@@ -33,6 +33,6 @@ class Entry(models.Model):
     quantity = models.DecimalField(max_digits=9, decimal_places=2)
     
     def __str__(self):
-        return f'Product: {self.product} Price: {self.price} Quantity: {self.quantity} Amount: {self.amount*self.quantity}'
+        return f'Product: {self.product} Price: {self.price} Quantity: {self.quantity} Amount: {self.price*self.quantity}'
 
 

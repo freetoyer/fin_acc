@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -10,13 +11,102 @@
 
     <title>Сканируем Чек</title>
   </head>
+  
   <body>
     <h1>Сканируем Чек</h1>
+    <style>
+    #preview{
+       width:500px;
+       height: 500px;
+       margin:0px auto;
+    }
+    </style>
+    <video id="preview"></video>
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script type="text/javascript">
+        var scanner = new Instascan.Scanner({ continuous: true, video: document.getElementById('preview'), scanPeriod: 5, mirror: false });
+        scanner.addListener('scan',function(content){
+            alert("Чек отсканирован! Подтвердите действие!");
+            //window.location.href=content;
+            if (content != null) {
+                send_qrcode(content);
+            }
+        });
+        Instascan.Camera.getCameras().then(function (cameras){
+            if(cameras.length>0){
+                scanner.start(cameras[0]);
+                $('[name="options"]').on('change',function(){
+                    if($(this).val()==1){
+                        if(cameras[0]!=""){
+                            scanner.start(cameras[0]);
+                        }else{
+                            alert('No Front camera found!');
+                        }
+                    }else if($(this).val()==2){
+                        if(cameras[1]!=""){
+                            scanner.start(cameras[1]);
+                        }else{
+                            alert('No Back camera found!');
+                        }
+                    }
+                });
+            }else{
+                console.error('No cameras found.');
+                alert('No cameras found.');
+            }
+        }).catch(function(e){
+            console.error(e);
+            alert(e);
+        });
+    </script>
+    <div class="btn-group btn-group-toggle mb-5" data-toggle="buttons">
+      <label class="btn btn-primary active">
+        <input type="radio" name="options" value="1" autocomplete="off" checked> Front Camera
+      </label>
+      <label class="btn btn-secondary">
+        <input type="radio" name="options" value="2" autocomplete="off"> Back Camera
+      </label>
+      <div id="qrcode_str"></div>
+    </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.js"
+      integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+      crossorigin="anonymous"></script>
+<!--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+-->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    
+    {% csrf_token %}
+    <script type="text/javascript">
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                     xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        function send_qrcode(content) {
+            data = {
+                qrcode: content
+            }
+            $.ajax({
+                type: "POST",
+                url:'{% url 'scan_cheque' %}',
+                data: data,
+                success: function(data){
+                    $('#qrcode_str').html('Чек № ' + data.cheque_number + ' отправлен')
+                }
+            })
+        }
+    </script>
   </body>
 </html>
