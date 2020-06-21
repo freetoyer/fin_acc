@@ -118,4 +118,5 @@ media/
 
 cert.*
 
+node_modules/
 

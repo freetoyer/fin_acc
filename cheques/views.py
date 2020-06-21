@@ -25,17 +25,26 @@ class ScanChequeView(View):
     def post(self, request):
         qr_string = request.POST.get('qrcode')
         qr_string_data = parse_qr_string(qr_string)
-        try:
-            cheque = Cheque.objects.get(number=qr_string_data.get('number'))
-        except:
-            time_formated = datetime.strptime(qr_string_data.get('time'), "%Y%m%dT%H%M%S").strftime("%Y-%m-%d %H:%M")
-            shop = Shop.objects.get(pk=1)
-            cheque = Cheque.objects.create(
-                number=qr_string_data.get('number'),
-                shop=shop,
-                summ=qr_string_data.get('summ'),
-                time=time_formated
-                )       
+        cheque, create = Cheque.objects.get_or_create(
+            number=qr_string_data.get('number'),
+            defaults={
+                'shop': Shop.objects.get(pk=1),
+                'summ': qr_string_data.get('summ'),
+                'time': qr_string_data.get('time')
+            }
+        )
+        # try:
+        #     cheque = Cheque.objects.get(number=qr_string_data.get('number'))
+        # except:
+        #     # time_formated = datetime.strptime(qr_string_data.get('time'), "%Y%m%dT%H%M%S").strftime("%Y-%m-%d %H:%M")
+        #     time_formated = datetime.strptime(qr_string_data.get('time'), "%Y%m%dT%H%M")
+        #     shop = Shop.objects.get(pk=1)
+        #     cheque = Cheque.objects.create(
+        #         number=qr_string_data.get('number'),
+        #         shop=shop,
+        #         summ=qr_string_data.get('summ'),
+        #         time=time_formated
+        #         )
         return JsonResponse({
             'cheque_number': cheque.number
         })
