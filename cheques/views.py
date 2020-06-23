@@ -4,6 +4,7 @@ from django.http import JsonResponse
 
 import re
 from datetime import datetime
+import requests
 
 from .models import Shop, Cheque
 
@@ -16,6 +17,12 @@ def parse_qr_string(qr_string):
     fp = re.findall(r'fp=(\w+)', qr_string)[0]
     result = {'time': time, 'summ': summ, 'fn': fn, 'number': number, 'fp': fp}
     return result
+
+
+def fns_signup(email, name, phone):
+    r = requests.post('https://proverkacheka.nalog.ru:9999/v1/mobile/users/signup', \
+                      json = {"email": email,"name": name,"phone": phone})
+
         
         
 class ScanChequeView(View):
@@ -33,18 +40,7 @@ class ScanChequeView(View):
                 'time': qr_string_data.get('time')
             }
         )
-        # try:
-        #     cheque = Cheque.objects.get(number=qr_string_data.get('number'))
-        # except:
-        #     # time_formated = datetime.strptime(qr_string_data.get('time'), "%Y%m%dT%H%M%S").strftime("%Y-%m-%d %H:%M")
-        #     time_formated = datetime.strptime(qr_string_data.get('time'), "%Y%m%dT%H%M")
-        #     shop = Shop.objects.get(pk=1)
-        #     cheque = Cheque.objects.create(
-        #         number=qr_string_data.get('number'),
-        #         shop=shop,
-        #         summ=qr_string_data.get('summ'),
-        #         time=time_formated
-        #         )
+
         return JsonResponse({
             'cheque_number': cheque.number
         })
