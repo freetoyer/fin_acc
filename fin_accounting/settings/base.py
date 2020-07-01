@@ -134,3 +134,7 @@ MEDIA_URL = '/media/'
 
 # CustomUser
 AUTH_USER_MODEL = 'users.CustomUser'
+
+
+MY_EMAIL = env('MY_EMAIL')
+PASSWORD_FNS = env('PASSWORD_FNS')
