@@ -45,13 +45,6 @@ def request_cheque_entries(qr_string_data, phone, password):
     print(f'Код ответа сервера ФНС на запрос данных в чеке: {request_info.status_code}')
     data = request_info.json()
     return data
-
-
-def get_cheque_entries(data):
-    my_products = pd.DataFrame(data['document']['receipt']['items'])
-    my_products['price'] = my_products['price']/100
-    my_products['sum'] = my_products['sum']/100
-    return my_products
     
 
 def fns_signup(email, name, phone):
@@ -84,15 +77,15 @@ class ScanChequeView(View):
             time.sleep(2)
             if check_cheque_result == 204:
                 data = request_cheque_entries(qr_string_data, user.profile.phone, password)
-                entries = get_cheque_entries(data)
-                for index, row in entries.iterrows():
+                for row in data['document']['receipt']['items']:
                     product, create = Product.objects.get_or_create(
                         name=row['name']
                     )
+                    print(name=row['name'])
                     entry = Entry.objects.create(
                         cheque=cheque,
                         product=product,
-                        price=row['price'],
+                        price=row['price']/100,
                         quantity=row['quantity']
                     )  
         except:
