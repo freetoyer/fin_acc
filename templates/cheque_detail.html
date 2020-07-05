@@ -2,4 +2,28 @@
 
 {% block content %}
     <h1>Чек номер {{ cheque.number }}</h1>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+              <th scope="col">№</th>
+              <th scope="col">Наименование</th>
+              <th scope="col">Количество</th>
+              <th scope="col">Цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in cheque.entries.all %}
+              <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ entry.product.name }}</td>
+                <td>{{ entry.quantity }}</td>
+                <td>{{ entry.price }}</td>
+              </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3">Итого:</td>
+                <td>{{ cheque.summ }}</td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock content %}

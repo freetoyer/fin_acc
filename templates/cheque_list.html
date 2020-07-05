@@ -2,7 +2,24 @@
 
 {% block content %}
     <h1>Список чеков</h1>
-    {% for cheque in cheques %}
-        <p>{{ cheque.number }}</p>
-    {% endfor %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+              <th scope="col">Номер чека</th>
+              <th scope="col">Дата</th>
+              <th scope="col">Магазин</th>
+              <th scope="col">Сумма</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cheque in cheques %}
+              <tr>
+                <th scope="row"><a href='{% url "cheque_detail" cheque %}'>{{ cheque.number }}</a></th>
+                <td>{{ cheque.time }}</td>
+                <td>{{ cheque.shop }}</td>
+                <td>{{ cheque.summ }}</td>     
+              </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock content %}
