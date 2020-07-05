@@ -3,6 +3,7 @@ from django.views import View
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.views.generic import ListView, DetailView
 
 import re
 from datetime import datetime
@@ -10,7 +11,7 @@ import time
 import requests
 import pandas as pd
 
-from .models import Shop, Cheque
+from .models import Shop, Cheque, Product, Entry
 from users.models import Profile
 
 
@@ -81,13 +82,12 @@ class ScanChequeView(View):
                     product, create = Product.objects.get_or_create(
                         name=row['name']
                     )
-                    print(name=row['name'])
                     entry = Entry.objects.create(
                         cheque=cheque,
                         product=product,
                         price=row['price']/100,
                         quantity=row['quantity']
-                    )  
+                    )
         except:
             fns_signup(email=user.email, name=user.profile.name, phone=user.profile.phone)
         
@@ -96,4 +96,15 @@ class ScanChequeView(View):
         })
     
     
-    
+class ListChequeView(ListView):
+    model = Cheque
+    context_object_name = 'cheques'
+    template_name = 'cheque_list.html'
+
+
+class DetailChequeView(DetailView):
+    model = Cheque
+    context_object_name = 'cheque'
+    template_name = 'cheque_detail.html'
+    slug_field = 'number'
+    slug_url_kwarg = 'number'

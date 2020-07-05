@@ -1,0 +1,8 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <h1>Список чеков</h1>
+    {% for cheque in cheques %}
+        <p>{{ cheque.number }}</p>
+    {% endfor %}
+{% endblock content %}
