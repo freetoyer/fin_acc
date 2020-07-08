@@ -103,7 +103,7 @@
             }
             $.ajax({
                 type: "POST",
-                url:'{% url 'scan_cheque' %}',
+                url:"{% url 'scan_cheque' %}",
                 data: data,
                 success: function(data){
                     $('#qrcode_str').html('Чек № ' + data.cheque_number + ' отправлен')

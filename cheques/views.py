@@ -108,3 +108,12 @@ class DetailChequeView(DetailView):
     template_name = 'cheque_detail.html'
     slug_field = 'number'
     slug_url_kwarg = 'number'
+
+    def get(self, request, number):
+        if request.is_ajax():
+            cheque = Cheque.objects.get(number=number)
+            # entries = cheque.entries.all()
+            entry = cheque.objects.get(pk=1)
+            # return JsonResponse({'entries': entries})
+            return JsonResponse({'entry_quantity': entry.quantity})
+        return render(request, 'cheque_detail.html')

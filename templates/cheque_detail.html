@@ -12,8 +12,15 @@
             </tr>
         </thead>
         <tbody>
-            {% for entry in cheque.entries.all %}
-              <tr>
+            <tr>
+                <th scope="row">1</th>
+                <td>-</td>
+                <td class='emptytable'>0,00</td>
+                <td id='testrow' style='display: none;'></td>
+                <td>0,00</td>
+            </tr>
+            {% for entry in entries %}
+              <tr class='filledtable' style='display: none;'>
                 <th scope="row">{{ forloop.counter }}</th>
                 <td>{{ entry.product.name }}</td>
                 <td>{{ entry.quantity }}</td>
@@ -22,8 +29,34 @@
             {% endfor %}
             <tr>
                 <td colspan="3">Итого:</td>
-                <td>{{ cheque.summ }}</td>
+                <td class='emptytable'>0,00</td>
+                <td class='filledtable' style='display: none;'>{{ cheque.summ }}</td>
             </tr>
         </tbody>
     </table>
+    
+    <script
+    src="https://code.jquery.com/jquery-3.5.1.js"
+    integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: '/cheque_detail/<str:number>/',
+                method: 'GET',
+                success: function(d) {
+                    console.log(d);
+                    $('.emptytable').css('display', 'none');
+                    $('.filledtable').css('display', 'table-cell');
+                    $('#testrow').css('display', 'table-cell').html(d.entry_quantity);
+                },
+                error: function(d) {
+                    console.log(d);
+                }
+            });
+        });
+    </script>
 {% endblock content %}
