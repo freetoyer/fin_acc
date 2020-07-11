@@ -12,22 +12,20 @@
             </tr>
         </thead>
         <tbody>
-            {% for entry in cheque.entries.all %}
-              <tr>
-                <th scope="row">{{ forloop.counter }}</th>
-                <td>{{ entry.product.name }}</td>
-                <td>{{ entry.quantity }}</td>
-                <td>{{ entry.price }}</td>
-              </tr>
-            {% endfor %}
+            <tr>
+              <th scope="row"></th>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
             <tr>
                 <td colspan="3">Итого:</td>
-                <td>{{ cheque.summ }}</td>
+                <td></td>
             </tr>
         </tbody>
     </table>
     
-<!--    <script
+    <script
     src="https://code.jquery.com/jquery-3.5.1.js"
     integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
     crossorigin="anonymous"></script>
@@ -41,11 +39,14 @@
                 method: 'GET',
                 success: function(d) {
                     console.log(d);
+                    //var filledtable = '{% for entry in cheque.entries.all %}<tr><th scope="row">{{ forloop.counter }}</th><td>{{ entry.product.name }}</td><td>{{ entry.quantity }}</td><td>{{ entry.price }}</td></tr>{% endfor %}<tr><td colspan="3">Итого:</td><td>{{ cheque.summ }}</td></tr>';
+                    var testdata = '<tr><td colspan="4">Тест</td></tr>';
+                    $('tbody').html('testdata');
                 },
                 error: function(d) {
                     console.log(d);
                 }
             });
         });
-    </script>-->
+    </script>
 {% endblock content %}
