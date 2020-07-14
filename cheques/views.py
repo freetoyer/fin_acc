@@ -105,7 +105,7 @@ class ListChequeView(ListView):
 class DetailChequeView(DetailView):
     model = Cheque
     context_object_name = 'cheque'
-    template_name = 'cheque_detail_init.html'
+    template_name = 'cheque_detail.html'
     slug_field = 'number'
     slug_url_kwarg = 'number'
     
@@ -113,5 +113,5 @@ class DetailChequeView(DetailView):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         if request.is_ajax():
-            template_name = 'cheque_detail.html'
+            time.sleep(3)
         return self.render_to_response(context)
