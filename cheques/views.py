@@ -9,10 +9,10 @@ import re
 from datetime import datetime
 import time
 import requests
-import pandas as pd
 
 from .models import Shop, Cheque, Product, Entry
 from users.models import Profile
+from .serializers import ChequeSerializer, EntrySerializer
 
 
 def parse_qr_string(qr_string):
@@ -65,7 +65,7 @@ class ScanChequeView(View):
             number=qr_string_data.get('number'),
             defaults={
                 'shop': Shop.objects.get(pk=1),
-                'summ': qr_string_data.get('summ'),
+                'summ': f"{qr_string_data.get('summ')[:-2]}.{qr_string_data.get('summ')[-2:]}",
                 'time': datetime.strptime(qr_string_data.get('time'), "%Y%m%dT%H%M%S")
             }
         )
@@ -100,11 +100,11 @@ class ListChequeView(ListView):
     model = Cheque
     context_object_name = 'cheques'
     template_name = 'cheque_list.html'
-
+    
 
 class DetailChequeView(DetailView):
     model = Cheque
-    context_object_name = 'cheque'
+    # context_object_name = 'cheque'
     template_name = 'cheque_detail.html'
     slug_field = 'number'
     slug_url_kwarg = 'number'
@@ -113,5 +113,12 @@ class DetailChequeView(DetailView):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         if request.is_ajax():
-            time.sleep(3)
+            time.sleep(1)
+            cheque_serializer = ChequeSerializer(self.object)
+            entries = self.object.entries.all()
+            entries_serializer = EntrySerializer(entries, many=True)
+            return JsonResponse({
+                'cheque': cheque_serializer.data,
+                'entries': entries_serializer.data
+                }) 
         return self.render_to_response(context)

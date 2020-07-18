@@ -12,7 +12,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr id='entry_data'>
               <th scope="row"></th>
               <td></td>
               <td></td>
@@ -20,7 +20,7 @@
             </tr>
             <tr>
                 <td colspan="3">Итого:</td>
-                <td></td>
+                <td id='cheque_summ'></td>
             </tr>
         </tbody>
     </table>
@@ -37,13 +37,21 @@
             $.ajax({
                 url: "{% url 'cheque_detail' cheque.number %}",
                 method: 'GET',
-                success: function(d) {
-                    console.log(d);
-                    var filledtable = '{% for entry in cheque.entries.all %}<tr><th scope="row">{{ forloop.counter }}</th><td>{{ entry.product.name }}</td><td>{{ entry.quantity }}</td><td>{{ entry.price }}</td></tr>{% endfor %}<tr><td colspan="3">Итого:</td><td>{{ cheque.summ }}</td></tr>';
-                    $('tbody').html(filledtable);
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data);
+                    let entries = data.entries;
+                    let cheque_summ = data.cheque.summ;
+                    let counter = 0;
+                    $('#entry_data').css('display', 'none');
+                    entries.forEach(function(entry, number) {
+                        counter = number + 1;
+                        $('#entry_data').before('<tr><th scope="row">' + counter + '</th><td>' + entry.product + '</td><td>' + entry.quantity + '</td><td>' + entry.price + '</td></tr>');
+                    });
+                    $('#cheque_summ').html(cheque_summ);
                 },
-                error: function(d) {
-                    console.log(d);
+                error: function(data) {
+                    console.log(data);
                 }
             });
         });
