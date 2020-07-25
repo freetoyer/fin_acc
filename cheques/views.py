@@ -25,9 +25,9 @@ def parse_qr_string(qr_string):
     return result
 
 
-# def fns_login(phone, password):
-#     requests.get('https://proverkacheka.nalog.ru:9999/v1/mobile/users/login', \
-#                  auth=(phone, password))
+def fns_login(phone, password):
+    requests.get('https://proverkacheka.nalog.ru:9999/v1/mobile/users/login', \
+                 auth=(phone, password))
 
 
 def check_cheque(qr_string_data, phone, password):
@@ -78,22 +78,27 @@ class ScanChequeView(View):
             time.sleep(2)
             if check_cheque_result == 204:
                 data = request_cheque_entries(qr_string_data, user.profile.phone, password)
-                for row in data['document']['receipt']['items']:
-                    product, create = Product.objects.get_or_create(
-                        name=row['name']
-                    )
-                    entry = Entry.objects.create(
-                        cheque=cheque,
-                        product=product,
-                        price=row['price']/100,
-                        quantity=row['quantity']
-                    )
+                if create:
+                    for row in data['document']['receipt']['items']:
+                        product, create = Product.objects.get_or_create(
+                            name=row['name']
+                        )
+                        entry = Entry.objects.create(
+                            cheque=cheque,
+                            product=product,
+                            price=row['price']/100,
+                            quantity=row['quantity']
+                        )
         except:
             fns_signup(email=user.email, name=user.profile.name, phone=user.profile.phone)
         
+        cheque_serializer = ChequeSerializer(cheque)
+        entries = cheque.entries.all()
+        entries_serializer = EntrySerializer(entries, many=True)
         return JsonResponse({
-            'cheque_number': cheque.number
-        })
+            'cheque': cheque_serializer.data,
+            'entries': entries_serializer.data
+            }) 
     
     
 class ListChequeView(ListView):
@@ -104,7 +109,6 @@ class ListChequeView(ListView):
 
 class DetailChequeView(DetailView):
     model = Cheque
-    # context_object_name = 'cheque'
     template_name = 'cheque_detail.html'
     slug_field = 'number'
     slug_url_kwarg = 'number'

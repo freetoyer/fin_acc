@@ -100,20 +100,54 @@
         function send_qrcode(content) {
             data = {
                 qrcode: content
-            }
+            };
             $.ajax({
                 type: "POST",
                 url:"{% url 'scan_cheque' %}",
                 data: data,
+                dataType: 'json',
                 success: function(data){
-                    $('#qrcode_str').html('Чек № ' + data.cheque_number + ' отправлен')
+                    console.log(data);
+                    $("#scaned_data").css('display', 'block');
+                    let entries = data.entries;
+                    let cheque_summ = data.cheque.summ;
+                    let cheque_number = data.cheque.number;
+                    let counter = 0;
+                    entries.forEach(function(entry, number) {
+                        counter = number + 1;
+                        $('#entry_data').before('<tr><th scope="row">' + counter + '</th><td>' + entry.product + '</td><td>' + entry.quantity + '</td><td>' + entry.price + '</td></tr>');
+                    });
+                    $('#cheque_summ').html(cheque_summ);
+                    $('h1').html('Чек № ' + cheque_number);
+                },
+                error: function(data) {
+                    console.log(data);
                 }
-            })
+            });
         }
     </script>
     
     
-    <div id="qrcode_str"></div>
+    <div id="scaned_data" style="display: none;">
+      <table class="table table-bordered">
+          <thead>
+              <tr>
+                <th scope="col">№</th>
+                <th scope="col">Наименование</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Цена</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr id='entry_data'>
+              </tr>
+              <tr>
+                  <td colspan="3">Итого:</td>
+                  <td id='cheque_summ'></td>
+              </tr>
+          </tbody>
+      </table>
+    </div>
     <script type="text/javascript">
       var content = 't=20200608T1542&s=8490.00&fn=9282000100375568&i=111655&fp=17069851&n=1';
       $(document).ready(send_qrcode(content));
